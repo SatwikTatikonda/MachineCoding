@@ -1,9 +1,7 @@
 package com.scaler.tictactoe.TTTgmae.models;
-import com.scaler.tictactoe.TTTgmae.strategies.winningStrategies;
+import com.scaler.tictactoe.TTTgmae.strategies.WinningStrategies;
 
-import javax.swing.plaf.basic.BasicOptionPaneUI;
 import java.util.*;
-
 public class Game
 {
 
@@ -13,7 +11,67 @@ public class Game
     private GameState state;
     private Player winner;
     private int nextPlayerMoveIndex;
-    List<winningStrategies>winngStrategies;
+    List<WinningStrategies>winngStrategies;
+
+
+    private Game(Builder builder){
+        this.winngStrategies=builder.winngStrategies;
+        this.players=builder.players;
+        System.out.println("players: "+players);
+        this.moves=new ArrayList<>();
+        this.board=new Board(builder.dimensions);
+        this.winner=null;
+        this.state=GameState.INPROGRESS;
+        this.nextPlayerMoveIndex=0;
+    }
+
+
+    public void makeMove(){
+        Player currentPlayer=players.get(nextPlayerMoveIndex);
+        System.out.println("Current player: "+currentPlayer.getName()+" 's turn");
+        Move move=currentPlayer.makeMove(board);
+        System.out.println(currentPlayer.getName()+" is making move at "+move.getCell().getRow()+" and  "+move.getCell().getColumn());
+
+        int row=move.getCell().getRow();
+        int col=move.getCell().getColumn();
+        Cell cellToBechanged=board.getBoard().get(row).get(col);
+        cellToBechanged.setState(CellState.FILLED);
+
+        Move finalMove=new Move(currentPlayer,cellToBechanged);
+        moves.add(finalMove);
+
+        nextPlayerMoveIndex++;
+        nextPlayerMoveIndex%=players.size();
+
+        if(checkWinner(finalMove)){
+            winner=currentPlayer;
+            state=GameState.ENDED;
+        }
+        else if(moves.size()==(board.getDimension()*board.getDimension())){
+            state=GameState.DRAW;
+        }
+
+    }
+
+    public void printBoard(){
+
+        board.printBoard();
+
+    }
+
+    public boolean checkWinner(Move move){
+
+        for(WinningStrategies ws:winngStrategies){
+
+            if(ws.checkWinner(board,move)){
+
+                return true;
+            }
+        }
+
+        return false;
+
+    }
 
     public Board getBoard() {
         return board;
@@ -39,21 +97,12 @@ public class Game
         return nextPlayerMoveIndex;
     }
 
-    public List<winningStrategies> getWinngStrategies() {
+    public List<WinningStrategies> getWinngStrategies() {
         return winngStrategies;
     }
 
     public static Builder getBuilder(){
         return new Builder();
-    }
-    private Game(Builder builder){
-        this.winngStrategies=builder.winngStrategies;
-        this.players=builder.players;
-        this.moves=moves;
-        this.board=new Board(builder.dimensions);
-        this.winner=null;
-        this.state=GameState.INPROGRESS;
-        this.nextPlayerMoveIndex=0;
     }
 
 
@@ -62,7 +111,7 @@ public class Game
 
         private int dimensions;
         private List<Player> players;
-        private List<winningStrategies>winngStrategies;
+        private List<WinningStrategies>winngStrategies;
 
         public Builder setDimensions(int dimensions) {
             this.dimensions = dimensions;
@@ -74,7 +123,7 @@ public class Game
             return this;
         }
 
-        public Builder setWinngStrategies(List<winningStrategies> winngStrategies) {
+        public Builder setWinngStrategies(List<WinningStrategies> winngStrategies) {
             this.winngStrategies = winngStrategies;
             return this;
         }
@@ -97,7 +146,7 @@ public class Game
                 throw new RuntimeException();
             }
 
-            return new Game(new Builder());
+            return new Game(this);
         }
     }
 

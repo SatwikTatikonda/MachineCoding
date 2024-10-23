@@ -44,4 +44,14 @@ public class Cell {
     public void setPlayer(Player player) {
         this.player = player;
     }
+
+
+    public void display(){
+        if(this.player==null){
+            System.out.print("|   |");
+        }
+        else{
+            System.out.print("| "+this.player.getSymbol()+" |");
+        }
+    }
 }
