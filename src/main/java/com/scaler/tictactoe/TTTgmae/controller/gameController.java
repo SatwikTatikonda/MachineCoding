@@ -28,6 +28,10 @@ public class gameController {
         return game.getWinner();
     }
 
+    public void undo(Game game){
+        game.undo();
+    }
+
 
 
 

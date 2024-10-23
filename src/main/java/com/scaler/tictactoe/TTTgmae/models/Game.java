@@ -36,6 +36,7 @@ public class Game
         int col=move.getCell().getColumn();
         Cell cellToBechanged=board.getBoard().get(row).get(col);
         cellToBechanged.setState(CellState.FILLED);
+        cellToBechanged.setPlayer(currentPlayer);
 
         Move finalMove=new Move(currentPlayer,cellToBechanged);
         moves.add(finalMove);
@@ -44,12 +45,18 @@ public class Game
         nextPlayerMoveIndex%=players.size();
 
         if(checkWinner(finalMove)){
+//            System.out.println(" i am in ");
             winner=currentPlayer;
             state=GameState.ENDED;
+            printBoard();
+            System.out.println("current player: "+currentPlayer.getName()+" has won the game");
         }
         else if(moves.size()==(board.getDimension()*board.getDimension())){
             state=GameState.DRAW;
+            printBoard();
+            System.out.println("Game is draw");
         }
+
 
     }
 
@@ -64,13 +71,32 @@ public class Game
         for(WinningStrategies ws:winngStrategies){
 
             if(ws.checkWinner(board,move)){
-
+                System.out.println(ws.getClass());
                 return true;
             }
         }
 
         return false;
 
+    }
+
+    public void undo(){
+        if(moves.size()>0){
+            Move lastMove=moves.get(moves.size()-1);
+            Cell cell=lastMove.getCell();
+            cell.setState(CellState.EMPTY);
+            cell.setPlayer(null);
+
+            for(WinningStrategies ws:winngStrategies){
+                    ws.handleUndo(board,lastMove);
+            }
+
+            nextPlayerMoveIndex=Math.min(nextPlayerMoveIndex-1,0);
+
+        }
+        else{
+            System.out.println("No moves to undo");
+        }
     }
 
     public Board getBoard() {

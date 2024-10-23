@@ -2,10 +2,17 @@ package com.scaler.tictactoe.TTTgmae.models;
 
 public class Symbol {
 
-    private char symbol;
+    private char sym;
 
-    public Symbol(char symbol) {
-        this.symbol=symbol;
+    public Symbol(char sym) {
+        this.sym=sym;
     }
 
+    public char getSym() {
+        return sym;
+    }
+
+    public void setSym(char sym) {
+        this.sym = sym;
+    }
 }

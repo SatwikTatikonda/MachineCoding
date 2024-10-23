@@ -26,7 +26,7 @@ public class DiagnolWinningStrategy implements WinningStrategies {
             }
             counts.get(2).put(symbol,counts.get(2).getOrDefault(symbol,0)+1);
 
-            if(counts.get(2).get(symbol)==board.getDimension()-1){
+            if(counts.get(2).get(symbol)==board.getDimension()){
                 return true;
             }
         }
@@ -37,12 +37,29 @@ public class DiagnolWinningStrategy implements WinningStrategies {
             }
             counts.get(1).put(symbol,counts.get(1).getOrDefault(symbol,0)+1);
 
-        if(counts.get(1).get(symbol)==board.getDimension()-1){
+        if(counts.get(1).get(symbol)==board.getDimension()){
         return true;
 
         }
         }
 
         return false;
+    }
+
+    @Override
+    public void handleUndo(Board board, Move move) {
+
+        int row=move.getCell().getRow();
+        int col=move.getCell().getColumn();
+        Symbol symbol=move.getPlayer().getSymbol();
+        if(row+col== board.getDimension()-1){
+            counts.get(2).put(symbol,counts.get(2).get(symbol)-1);
+        }
+        else if(row==col){
+            counts.get(1).put(symbol,counts.get(1).get(symbol)-1);
+
+        }
+
+
     }
 }
